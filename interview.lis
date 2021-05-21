@@ -1,0 +1,321 @@
+     1                                    
+     2                                  ;********************************************************************************************
+     3                                  ; Program name:          The king of assembly                                               *
+     4                                  ; Programming Language:  x86 Assembly                                                       *
+     5                                  ; Program Description:   This program asks a user to enter their name and salary they would *
+     6                                  ;                        like to receive, then it moves on to ask if that person is chris   *
+     7                                  ;                        or not, if they are not then it moves to calculate the resistance. *
+     8                                  ;********************************************************************************************
+     9                                  ; Author Information:                                                                       *
+    10                                  ; Name:         David Navarro                                                               *
+    11                                  ; Email:        navarrod253n@csu.fullerton.edu                                              *    
+    12                                  ; Institution:  California State University - Fullerton                                     *
+    13                                  ; Course:       CPSC 240-01 Assembly Language                                               *
+    14                                  ;                                                                                           *
+    15                                  ;********************************************************************************************
+    16                                  ; Copyright (C) 2021 David Navarro                                                          *
+    17                                  ; This program is free software: you can redistribute it and/or modify it under the terms   * 
+    18                                  ; of the GNU General Public License version 3 as published by the Free Software Foundation. * 
+    19                                  ; This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY  *
+    20                                  ; without even the implied Warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. * 
+    21                                  ; See the GNU General Public License for more details. A copy of the GNU General Public     *
+    22                                  ; License v3 is available here:  <https://www.gnu.org/licenses/>.                           *
+    23                                  ;                                                                                           *
+    24                                  ;********************************************************************************************
+    25                                  ; Program information                                                                       *
+    26                                  ;   Program name: The king of assembly                                                      *
+    27                                  ;   Programming languages: One module in C, one module in X86, one bash file                *
+    28                                  ;   Files in this program: main.c, interview.asm, r.sh                                      *   
+    29                                  ;   					                                                                    *
+    30                                  ;                                                                                           *
+    31                                  ;********************************************************************************************
+    32                                  ; This File                                                                                 *
+    33                                  ;    Name:      interview.asm                                                               *
+    34                                  ;    Purpose:   To accept a users input of name and salary, then it moves on to ask some    *
+    35                                  ;               questions, based on what the user answers the program will jump to a        *
+    36                                  ;               specific block of code and execute it.                                      *
+    37                                  ;********************************************************************************************
+    38                                  extern printf
+    39                                  extern scanf
+    40                                  global interview                ; Makes function callable from other linked files.
+    41                                  
+    42                                  section .data
+    43 00000000 48656C6C6F2E202573-         hello_message db "Hello. %s I am Ms Fenster. The interview will begin now.",10,0
+    43 00000009 204920616D204D7320-
+    43 00000012 46656E737465722E20-
+    43 0000001B 54686520696E746572-
+    43 00000024 766965772077696C6C-
+    43 0000002D 20626567696E206E6F-
+    43 00000036 772E0A00           
+    44 0000003A 576F77212024256C66-         salary db "Wow! $%lf  that's a lot of cash. Who do you think you are, Chris Sawyer (y or n)?",0
+    44 00000043 202074686174277320-
+    44 0000004C 61206C6F74206F6620-
+    44 00000055 636173682E2057686F-
+    44 0000005E 20646F20796F752074-
+    44 00000067 68696E6B20796F7520-
+    44 00000070 6172652C2043687269-
+    44 00000079 732053617779657220-
+    44 00000082 2879206F72206E293F-
+    44 0000008B 00                 
+    45 0000008C 257300                      answers db "%s",0
+    46 0000008F 416C72696768742E20-         electricity db "Alright.  Now we will work on your electricity.",10,0
+    46 00000098 204E6F772077652077-
+    46 000000A1 696C6C20776F726B20-
+    46 000000AA 6F6E20796F75722065-
+    46 000000B3 6C6563747269636974-
+    46 000000BC 792E0A00           
+    47 000000C0 506C6561736520656E-         enter_resitance1 db "Please enter the resistance of circuit #1 in ohms: ",0
+    47 000000C9 746572207468652072-
+    47 000000D2 6573697374616E6365-
+    47 000000DB 206F66206369726375-
+    47 000000E4 697420233120696E20-
+    47 000000ED 6F686D733A2000     
+    48 000000F4 256C6600                    resistance1 db "%lf",0
+    49 000000F8 576861742069732074-         enter_resitance2 db "What is the resistance of circuit #2 in ohms: ",0
+    49 00000101 686520726573697374-
+    49 0000010A 616E6365206F662063-
+    49 00000113 697263756974202332-
+    49 0000011C 20696E206F686D733A-
+    49 00000125 2000               
+    50 00000127 256C6600                    resistance2 db "%lf",0
+    51 0000012B 54686520746F74616C-         display_resistance db "The total resistance is %lf Ohms.",10,0
+    51 00000134 20726573697374616E-
+    51 0000013D 636520697320256C66-
+    51 00000146 204F686D732E0A00   
+    52 0000014E 5765726520796F7520-         cs_mojor_prompt db "Were you a computer science major (y or n)?",0
+    52 00000157 6120636F6D70757465-
+    52 00000160 7220736369656E6365-
+    52 00000169 206D616A6F72202879-
+    52 00000172 206F72206E293F00   
+    53 0000017A 257300                      answer2 db "%s",0
+    54 0000017D 5468616E6B20796F75-         cs_major_exit db "Thank you.  Please follow the exit signs to the front desk.",10,0
+    54 00000186 2E2020506C65617365-
+    54 0000018F 20666F6C6C6F772074-
+    54 00000198 686520657869742073-
+    54 000001A1 69676E7320746F2074-
+    54 000001AA 68652066726F6E7420-
+    54 000001B3 6465736B2E0A00     
+    55                                  
+    56                                  section .bss
+    57                                  
+    58                                  section .text
+    59                                  
+    60                                  interview:
+    61                                  
+    62 00000000 55                      push rbp
+    63 00000001 4889E5                  mov  rbp,rsp
+    64 00000004 57                      push rdi                                                    ;Backup rdi
+    65 00000005 56                      push rsi                                                    ;Backup rsi
+    66 00000006 52                      push rdx                                                    ;Backup rdx
+    67 00000007 51                      push rcx                                                    ;Backup rcx
+    68 00000008 4150                    push r8                                                     ;Backup r8
+    69 0000000A 4151                    push r9                                                     ;Backup r9
+    70 0000000C 4152                    push r10                                                    ;Backup r10
+    71 0000000E 4153                    push r11                                                    ;Backup r11
+    72 00000010 4154                    push r12                                                    ;Backup r12
+    73 00000012 4155                    push r13                                                    ;Backup r13
+    74 00000014 4156                    push r14                                                    ;Backup r14
+    75 00000016 4157                    push r15                                                    ;Backup r15
+    76 00000018 53                      push rbx                                                    ;Backup rbx
+    77 00000019 9C                      pushf                                                       ;Backup rflags
+    78                                  
+    79                                  ;Registers rax, rip, and rsp are usually not backed up.
+    80 0000001A 6A00                    push qword 0
+    81                                  
+    82 0000001C 4989FF                  mov r15, rdi            ;save name 
+    83 0000001F F2440F10F8              movsd xmm15, xmm0         ;save salary
+    84                                  
+    85                                  ;Display hello message
+    86 00000024 6A00                    push qword 0
+    87 00000026 B800000000              mov rax, 0
+    88 0000002B 48BF-                   mov rdi, hello_message  ;"Hello. %s I am Ms Fenster. The interview will begin now."
+    88 0000002D [0000000000000000] 
+    89 00000035 4C89FE                  mov rsi, r15
+    90 00000038 E8(00000000)            call printf
+    91 0000003D 58                      pop rax
+    92                                  
+    93                                  ;Display salary message
+    94 0000003E 6A00                    push qword 0
+    95 00000040 B801000000              mov rax, 1
+    96 00000045 48BF-                   mov rdi, salary          ;"Wow! $ %lf that's a lot of cash. Who do you think you are, Chris Sawyer (y or n)?"
+    96 00000047 [3A00000000000000] 
+    97 0000004F F2410F10C7              movsd xmm0, xmm15
+    98 00000054 E8(00000000)            call printf
+    99 00000059 58                      pop rax
+   100                                  
+   101                                  ;Begin the scanf block to input if the person is Chris or not.
+   102 0000005A 6A00                    push qword 0
+   103 0000005C B800000000              mov rax, 0
+   104 00000061 48BF-                   mov rdi, answers
+   104 00000063 [8C00000000000000] 
+   105 0000006B 4889E6                  mov rsi, rsp
+   106 0000006E E8(00000000)            call scanf
+   107                                  
+   108                                  ;if answer == 'y' then move to i_am_chris_sawyer:
+   109 00000073 B879000000              mov rax, 121 ;'y' value
+   110 00000078 483B0424                cmp rax, [rsp]
+   111 0000007C 58                      pop rax
+   112 0000007D 0F8447010000            je i_am_chris_sawyer
+   113                                  
+   114                                  ;Display electricity message
+   115 00000083 6A00                    push qword 0
+   116 00000085 B800000000              mov rax, 0
+   117 0000008A 48BF-                   mov rdi, electricity  ;"Alright.  Now we will work on your electricity."
+   117 0000008C [8F00000000000000] 
+   118 00000094 E8(00000000)            call printf
+   119 00000099 58                      pop rax
+   120                                  
+   121                                  ;Display enter resistance1 message
+   122 0000009A 6A00                    push qword 0
+   123 0000009C B800000000              mov rax, 0
+   124 000000A1 48BF-                   mov rdi, enter_resitance1     ;"Please enter the resistance of circuit #1 in ohms: "
+   124 000000A3 [C000000000000000] 
+   125 000000AB E8(00000000)            call printf
+   126 000000B0 58                      pop rax
+   127                                  
+   128                                  ;Begin the scanf block to input the first resistance.
+   129 000000B1 6A00                    push qword 0
+   130 000000B3 B800000000              mov rax, 0
+   131 000000B8 48BF-                   mov rdi, resistance1 
+   131 000000BA [F400000000000000] 
+   132 000000C2 4889E6                  mov rsi, rsp
+   133 000000C5 E8(00000000)            call scanf
+   134 000000CA F2440F10F0              movsd xmm14, xmm0   ;moves the first resistance to xmm14
+   135 000000CF 58                      pop rax
+   136                                  
+   137                                  ;Display enter resistance2 message
+   138 000000D0 6A00                    push qword 0
+   139 000000D2 B800000000              mov rax, 0
+   140 000000D7 48BF-                   mov rdi, enter_resitance2   ;"What is the resistance of circuit #2 in ohms:"
+   140 000000D9 [F800000000000000] 
+   141 000000E1 E8(00000000)            call printf
+   142 000000E6 58                      pop rax
+   143                                  
+   144                                  ;Begin the scanf block to input the first resistance2.
+   145 000000E7 6A00                    push qword 0
+   146 000000E9 B800000000              mov rax, 0
+   147 000000EE 48BF-                   mov rdi, resistance2
+   147 000000F0 [2701000000000000] 
+   148 000000F8 4889E6                  mov rsi, rsp
+   149 000000FB E8(00000000)            call scanf
+   150 00000100 F2440F10E8              movsd xmm13, xmm0   ;moves the resistance 2 to xmm13
+   151 00000105 58                      pop rax
+   152                                  
+   153                                  ;calculate and display the total resistance
+   154 00000106 6A00                    push qword 0
+   155 00000108 41B801000000            mov r8, 1 
+   156 0000010E F24D0F2AE0              cvtsi2sd xmm12, r8 
+   157 00000113 F2450F5EE6              divsd xmm12, xmm14  ;This block makes 1/the first resistance and saves it in xmm12
+   158 00000118 58                      pop rax
+   159                                  
+   160 00000119 6A00                    push qword 0
+   161 0000011B 41B901000000            mov r9, 1 
+   162 00000121 F24D0F2AD1              cvtsi2sd xmm10, r9 
+   163 00000126 F2450F5ED5              divsd xmm10, xmm13  ;This block makes 1/the second resistance and saves it in xmm10
+   164 0000012B 58                      pop rax
+   165                                  
+   166                                  ;This block adds the resistances
+   167 0000012C B801000000              mov rax, 1
+   168 00000131 F2450F58E2              addsd xmm12, xmm10  
+   169                                  
+   170 00000136 41BA01000000            mov r10, 1
+   171 0000013C F24D0F2ACA              cvtsi2sd xmm9, r10
+   172 00000141 F2450F5ECC              divsd xmm9, xmm12   ;This block divides 1/(1/r1 + 1/r2) to get the total resistance
+   173                                  
+   174                                  
+   175                                  ;Display resistance
+   176 00000146 6A00                    push qword 0
+   177 00000148 B801000000              mov rax, 1
+   178 0000014D 48BF-                   mov rdi, display_resistance ;"the total resistance is: "
+   178 0000014F [2B01000000000000] 
+   179 00000157 F2410F10C1              movsd xmm0, xmm9
+   180 0000015C E8(00000000)            call printf
+   181 00000161 58                      pop rax
+   182                                  
+   183                                  ;Ask the user if they were CS major or not
+   184 00000162 6A00                    push qword 0
+   185 00000164 B801000000              mov rax, 1
+   186 00000169 48BF-                   mov rdi, cs_mojor_prompt  ;"Were you a computer science major (y or n)?"
+   186 0000016B [4E01000000000000] 
+   187 00000173 E8(00000000)            call printf
+   188 00000178 58                      pop rax
+   189                                  
+   190                                  ;Begin the scanf block to input if the person is a CS major or not.
+   191 00000179 6A00                    push qword 0
+   192 0000017B B800000000              mov rax, 0
+   193 00000180 48BF-                   mov rdi, answer2  ;saves the users answer to rdi 
+   193 00000182 [7A01000000000000] 
+   194 0000018A 4889E6                  mov rsi, rsp
+   195 0000018D E8(00000000)            call scanf
+   196                                  
+   197                                  ;if answer == 'y' then move to i_am_cs_major
+   198 00000192 B879000000              mov rax, 121 ;y value 
+   199 00000197 48390424                cmp [rsp], rax
+   200 0000019B 58                      pop rax
+   201 0000019C 7458                    je i_am_cs_major
+   202                                  
+   203 0000019E 6A00                    push qword 0
+   204 000001A0 B801000000              mov rax, 1
+   205 000001A5 48BF-                   mov rdi, cs_major_exit  ;"Thank you.  Please follow the exit signs to the front desk."
+   205 000001A7 [7D01000000000000] 
+   206 000001AF E8(00000000)            call printf
+   207 000001B4 48B814AE47E17AC092-     mov rax, 0x4092C07AE147AE14 ;1200.12 in hex format
+   207 000001BD 40                 
+   208 000001BE 66480F6EE8              movq xmm5, rax ; stores it in xmm7 to return to the caller 
+   209 000001C3 F20F10C5                movsd xmm0, xmm5 ;1200.12 will return to the caller
+   210 000001C7 58                      pop rax
+   211 000001C8 EB58                    jmp conclusion
+   212                                  
+   213                                  i_am_chris_sawyer:
+   214                                  ;Display the exit message for the cs major
+   215 000001CA 6A00                    push qword 0
+   216 000001CC B801000000              mov rax, 1
+   217 000001D1 48BF-                   mov rdi, cs_major_exit  ;"Thank you.  Please follow the exit signs to the front desk."
+   217 000001D3 [7D01000000000000] 
+   218 000001DB E8(00000000)            call printf
+   219 000001E0 48B80000000080842E-     mov rax, 0x412E848000000000 ;1 million in hex format
+   219 000001E9 41                 
+   220 000001EA 66480F6EF0              movq xmm6, rax ;saves one million to xmm6
+   221 000001EF F20F10C6                movsd xmm0, xmm6 ;one million will be returned to the front desk
+   222 000001F3 58                      pop rax
+   223 000001F4 EB2C                    jmp conclusion
+   224                                  
+   225                                  i_am_cs_major:
+   226                                  ;Display the exit message for the cs major
+   227 000001F6 6A00                    push qword 0
+   228 000001F8 B801000000              mov rax, 1
+   229 000001FD 48BF-                   mov rdi, cs_major_exit  ;"Thank you.  Please follow the exit signs to the front desk."
+   229 000001FF [7D01000000000000] 
+   230 00000207 E8(00000000)            call printf
+   231 0000020C 48B848E17A140E7CF5-     mov rax, 0x40F57C0E147AE148 ;88000.88 in hex format
+   231 00000215 40                 
+   232 00000216 66480F6EF8              movq xmm7, rax ;88000.88 is saved in xmm7 
+   233 0000021B F20F10C7                movsd xmm0, xmm7 ; 88000.88 will now be returned to the front desk
+   234 0000021F 7401                    je conclusion
+   235 00000221 58                      pop rax
+   236                                  
+   237                                  
+   238                                  conclusion:
+   239                                  
+   240 00000222 58                      pop rax                        ;Reverse the push near the beginning of this asm function.
+   241                                  
+   242                                  
+   243                                  
+   244                                  ;===== Restore original values to integer registers ===================================================================
+   245 00000223 9D                      popf                                                        ;Restore rflags
+   246 00000224 5B                      pop rbx                                                     ;Restore rbx
+   247 00000225 415F                    pop r15                                                     ;Restore r15
+   248 00000227 415E                    pop r14                                                     ;Restore r14
+   249 00000229 415D                    pop r13                                                     ;Restore r13
+   250 0000022B 415C                    pop r12                                                     ;Restore r12
+   251 0000022D 415B                    pop r11                                                     ;Restore r11
+   252 0000022F 415A                    pop r10                                                     ;Restore r10
+   253 00000231 4159                    pop r9                                                      ;Restore r9
+   254 00000233 4158                    pop r8                                                      ;Restore r8
+   255 00000235 59                      pop rcx                                                     ;Restore rcx
+   256 00000236 5A                      pop rdx                                                     ;Restore rdx
+   257 00000237 5E                      pop rsi                                                     ;Restore rsi
+   258 00000238 5F                      pop rdi                                                     ;Restore rdi
+   259 00000239 5D                      pop rbp                                                     ;Restore rbp
+   260                                  
+   261 0000023A C3                      ret
